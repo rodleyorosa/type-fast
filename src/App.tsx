@@ -1,7 +1,9 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isStarted, setIsStarted] = useState(false);
   // todo: replace with random string generator
   const stringToCopy = "React is a JavaScript library for building interfaces.";
   const stringToCopyArray = useMemo(
@@ -28,10 +30,27 @@ function App() {
 
   const handleOnChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setIsStarted(true);
       setInputValue(e.target.value);
     },
     []
   );
+
+  const resetTime = useCallback(() => {
+    setTimeLeft(60);
+    setIsStarted(false);
+    setInputValue("");
+  }, []);
+
+  useEffect(() => {
+    if (!isStarted) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((time) => (time > 0 ? time - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isStarted]);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -44,7 +63,7 @@ function App() {
         </div>
         <div className="flex space-x-4 grid grid-flow-col justify-stretch text-center">
           <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
-            <p className="text-xl font-bold">60s</p>
+            <p className="text-xl font-bold">{timeLeft}s</p>
             <p className="text-gray-400 text-sm">Time</p>
           </div>
           <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
@@ -63,15 +82,17 @@ function App() {
 
         <div className="bg-white p-6 shadow-sm rounded-md">
           <textarea
-            name=""
-            id=""
+            value={inputValue}
             placeholder="Start typing here..."
             className="border border-gray-300 rounded-md w-full p-4 outline-none"
             onChange={handleOnChange}
           ></textarea>
         </div>
 
-        <button className="bg-blue-600 text-white p-3 rounded-md font-semibold cursor-pointer">
+        <button
+          onClick={resetTime}
+          className="bg-blue-600 text-white p-3 rounded-md font-semibold cursor-pointer"
+        >
           Reset
         </button>
       </div>
