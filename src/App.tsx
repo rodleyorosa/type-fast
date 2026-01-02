@@ -57,6 +57,10 @@ const App = () => {
     });
   }, [quote, inputValue]);
 
+  const isCompleted = useMemo(() => {
+    return inputValue === quote || timeLeft === 0;
+  }, [inputValue, quote, timeLeft]);
+
   const handleOnChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setIsStarted(true);
@@ -72,14 +76,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!isStarted) return;
+    if (!isStarted || isCompleted) return;
 
     const interval = setInterval(() => {
       setTimeLeft((time) => (time > 0 ? time - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isStarted]);
+  }, [isStarted, isCompleted]);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -116,13 +120,14 @@ const App = () => {
         <div className="bg-white p-6 shadow-sm rounded-md">
           <textarea
             value={inputValue}
+            disabled={isCompleted}
             placeholder="Start typing here..."
             className="border border-gray-300 rounded-md w-full p-4 outline-none"
             onChange={handleOnChange}
           ></textarea>
         </div>
 
-        {timeLeft === 0 && (
+        {isCompleted && (
           <div className="flex flex-col gap-2 bg-green-100 border border-green-200 p-6 shadow-sm rounded-md text-center">
             <h2 className="font-bold text-xl text-green-800">
               Test Completed!
