@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFetchQuote } from "./hooks/useFetchQuote";
 import type { Quote } from "./types";
+import { normalizeText } from "./utils";
 
 const App = () => {
-  const { data, isLoading } = useFetchQuote<Quote>(
+  const { data, isLoading, refetch } = useFetchQuote<Quote>(
     "https://thequoteshub.com/api/random"
   );
   const [inputValue, setInputValue] = useState("");
@@ -12,7 +13,8 @@ const App = () => {
 
   const quote = useMemo(() => {
     return (
-      data?.text ?? "React is a JavaScript library for building interfaces."
+      normalizeText(data?.text) ??
+      "React is a JavaScript library for building interfaces."
     );
   }, [data?.text]);
 
@@ -20,15 +22,11 @@ const App = () => {
     const timeElapsed = 60 - timeLeft;
     if (timeElapsed === 0) return 0;
 
-    const correctChars = inputValue.split("").filter((char, index) => {
-      return char === quote[index];
-    }).length;
-
-    const words = correctChars / 5;
+    const words = inputValue.length / 5;
     const minutes = timeElapsed / 60;
 
     return Math.round(words / minutes);
-  }, [inputValue, quote, timeLeft]);
+  }, [inputValue, timeLeft]);
 
   const accuracy = useMemo(() => {
     if (inputValue.length === 0) return 100;
@@ -73,7 +71,8 @@ const App = () => {
     setTimeLeft(60);
     setIsStarted(false);
     setInputValue("");
-  }, []);
+    refetch();
+  }, [refetch]);
 
   useEffect(() => {
     if (!isStarted || isCompleted) return;
@@ -113,14 +112,7 @@ const App = () => {
           {isLoading ? (
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
           ) : (
-            <p
-              className="text-xl text-gray-400"
-              onPaste={(e) => e.preventDefault()}
-              onCopy={(e) => e.preventDefault()}
-              onCut={(e) => e.preventDefault()}
-            >
-              {stringColorMapping}
-            </p>
+            <p className="text-xl text-gray-400">{stringColorMapping}</p>
           )}
         </div>
 
@@ -128,6 +120,7 @@ const App = () => {
           <textarea
             value={inputValue}
             disabled={isCompleted}
+            onPaste={(e) => e.preventDefault()}
             placeholder="Start typing here..."
             className="border border-gray-300 rounded-md w-full p-4 outline-none"
             onChange={handleOnChange}
