@@ -16,6 +16,30 @@ const App = () => {
     );
   }, [data?.text]);
 
+  const wpm = useMemo(() => {
+    const timeElapsed = 60 - timeLeft;
+    if (timeElapsed === 0) return 0;
+
+    const correctChars = inputValue.split("").filter((char, index) => {
+      return char === quote[index];
+    }).length;
+
+    const words = correctChars / 5;
+    const minutes = timeElapsed / 60;
+
+    return Math.round(words / minutes);
+  }, [inputValue, quote, timeLeft]);
+
+  const accuracy = useMemo(() => {
+    if (inputValue.length === 0) return 100;
+
+    const correctChars = inputValue.split("").filter((char, index) => {
+      return char === quote[index];
+    }).length;
+
+    return Math.round((correctChars / inputValue.length) * 100);
+  }, [inputValue, quote]);
+
   const stringColorMapping = useMemo(() => {
     return quote.split("").map((char, index) => {
       let charColor = "";
@@ -72,11 +96,11 @@ const App = () => {
             <p className="text-gray-400 text-sm">Time</p>
           </div>
           <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
-            <p className="text-xl font-bold text-blue-600">0</p>
+            <p className="text-xl font-bold text-blue-600">{wpm}</p>
             <p className="text-gray-400 text-sm">WPM</p>
           </div>
           <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
-            <p className="text-xl font-bold text-green-600">100%</p>
+            <p className="text-xl font-bold text-green-600">{accuracy}%</p>
             <p className="text-gray-400 text-sm">Accuracy</p>
           </div>
         </div>
@@ -104,10 +128,10 @@ const App = () => {
               Test Completed!
             </h2>
             <p>
-              <span className="font-bold">1</span> WPM
+              <span className="font-bold">{wpm}</span> WPM
             </p>
             <p>
-              <span className="font-bold">100%</span> Accuracy
+              <span className="font-bold">{accuracy}%</span> Accuracy
             </p>
           </div>
         )}
