@@ -6,5 +6,5 @@ export const normalizeText = (text?: string): string | undefined => {
     .replaceAll("’", "'")
     .replaceAll("'", "'")
     .replaceAll("”", '"')
-    .trim();
+    .replaceAll("‘", "'");
 };

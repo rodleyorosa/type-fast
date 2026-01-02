@@ -45,6 +45,8 @@ const App = () => {
       if (inputValue && inputValue[index]) {
         charColor =
           inputValue[index] === char ? "text-green-500" : "text-red-500";
+      } else if (index === inputValue.length) {
+        charColor = "bg-blue-100";
       }
 
       return (
@@ -85,24 +87,25 @@ const App = () => {
   }, [isStarted, isCompleted]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="flex flex-col m-auto gap-4 w-1/2">
+    <div className="flex min-h-screen bg-gray-50 p-4">
+      <div className="flex flex-col m-auto gap-4 w-full max-w-2xl">
         <div className="text-center">
           <h1 className="text-4xl font-bold">TypeFast</h1>
           <p className="text-gray-400 text-sm mt-2 font-light tracking-wide">
             Test your typing speed
           </p>
         </div>
-        <div className="flex space-x-4 grid grid-flow-col justify-stretch text-center">
-          <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div className="flex flex-col bg-white shadow-sm rounded-md py-4 order-3 sm:order-1">
             <p className="text-xl font-bold">{timeLeft}s</p>
             <p className="text-gray-400 text-sm">Time</p>
           </div>
-          <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
+          <div className="flex flex-col bg-white shadow-sm rounded-md py-4 order-2 sm:order-2">
             <p className="text-xl font-bold text-blue-600">{wpm}</p>
             <p className="text-gray-400 text-sm">WPM</p>
           </div>
-          <div className="flex flex-col bg-white shadow-sm rounded-md py-4">
+          <div className="flex flex-col bg-white shadow-sm rounded-md py-4 order-1 sm:order-3">
             <p className="text-xl font-bold text-green-600">{accuracy}%</p>
             <p className="text-gray-400 text-sm">Accuracy</p>
           </div>
@@ -145,7 +148,7 @@ const App = () => {
           onClick={resetTime}
           className="bg-blue-600 text-white p-3 rounded-md font-semibold cursor-pointer"
         >
-          Reset
+          {isCompleted ? "Reset" : "Refresh"}
         </button>
       </div>
     </div>
