@@ -113,7 +113,14 @@ const App = () => {
           {isLoading ? (
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
           ) : (
-            <p className="text-xl text-gray-400">{stringColorMapping}</p>
+            <p
+              className="text-xl text-gray-400"
+              onPaste={(e) => e.preventDefault()}
+              onCopy={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
+            >
+              {stringColorMapping}
+            </p>
           )}
         </div>
 
